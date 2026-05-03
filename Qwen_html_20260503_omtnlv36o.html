@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Formation Тренажёры • 8 класс</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        .nav-btn {
+            padding: 12px 24px;
+            border: 2px solid white;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .page {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s;
+        }
+        .page.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== СТИЛИ УПРАЖНЕНИЙ ===== */
+        #ex-page .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        #ex-page header {
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: 30px;
+        }
+        #ex-page h1 { color: #667eea; font-size: 2.2em; margin-bottom: 10px; }
+        #ex-page .subtitle { color: #666; font-size: 1.1em; }
+        #ex-page .topic-tabs {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; justify-content: center;
+        }
+        #ex-page .tab-btn {
+            padding: 12px 20px; border: 2px solid #667eea; background: white; color: #667eea;
+            border-radius: 25px; cursor: pointer; font-size: 0.95em; font-weight: 600; transition: all 0.3s;
+        }
+        #ex-page .tab-btn:hover, #ex-page .tab-btn.active {
+            background: #667eea; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        #ex-page .exercise-section { display: none; animation: fadeIn 0.5s; }
+        #ex-page .exercise-section.active { display: block; }
+        #ex-page .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+            padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; font-size: 1.3em;
+        }
+        #ex-page .theory-box {
+            background: #f8f9ff; border-left: 4px solid #667eea; padding: 15px;
+            border-radius: 0 10px 10px 0; margin-bottom: 20px; font-size: 0.95em;
+        }
+        #ex-page .theory-box h3 { color: #667eea; margin-bottom: 10px; }
+        #ex-page .theory-box ul { margin-left: 20px; line-height: 1.8; }
+        #ex-page .exercise-item {
+            background: #fff; border: 2px solid #e0e0ff; border-radius: 12px;
+            padding: 18px; margin: 12px 0; transition: all 0.3s;
+        }
+        #ex-page .exercise-item:hover { border-color: #667eea; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1); }
+        #ex-page .exercise-text { font-size: 1.05em; margin-bottom: 12px; line-height: 1.6; }
+        #ex-page .word-hint {
+            color: #667eea; font-weight: bold; background: #f0f3ff; padding: 3px 10px;
+            border-radius: 5px; display: inline-block; margin-left: 8px;
+        }
+        #ex-page .answer-input {
+            width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1em; transition: all 0.3s; margin-top: 8px;
+        }
+        #ex-page .answer-input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
+        #ex-page .answer-input.correct { border-color: #2ecc71; background: #f0fff4; }
+        #ex-page .answer-input.incorrect { border-color: #e74c3c; background: #fff5f5; }
+        #ex-page .check-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;
+            padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 1em; font-weight: 600;
+            margin-top: 10px; transition: all 0.3s;
+        }
+        #ex-page .check-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        #ex-page .feedback { margin-top: 10px; padding: 10px; border-radius: 8px; font-weight: 600; display: none; }
+        #ex-page .feedback.show { display: block; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        #ex-page .feedback.correct { background: #d4edda; color: #155724; }
+        #ex-page .feedback.incorrect { background: #f8d7da; color: #721c24; }
+        #ex-page .score-board {
+            position: fixed; top: 20px; right: 20px; background: white; padding: 15px 25px;
+            border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); font-weight: bold; color: #667eea; z-index: 1000;
+        }
+        #ex-page .compound-match { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        #ex-page .match-item { padding: 12px; background: #f8f9ff; border-radius: 8px; text-align: center; border: 2px solid #e0e0ff; }
+        #ex-page .match-select { width: 100%; padding: 8px; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; }
+
+        /* ===== СТИЛИ КАРТОЧЕК ===== */
+        #fc-page .stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        #fc-page .stat-box { background: white; padding: 10px 20px; border-radius: 15px; font-weight: bold; color: #667eea; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #fc-page .category-selector { margin-bottom: 30px; text-align: center; }
+        #fc-page .category-selector select {
+            padding: 12px 25px; font-size: 1.1em; border: none; border-radius: 25px; background: white;
+            color: #667eea; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); outline: none;
+        }
+        #fc-page .card-container {
+            perspective: 1000px; width: 100%; max-width: 600px; height: 400px;
+            margin: 0 auto 30px; cursor: pointer;
+        }
+        #fc-page .card {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            transition: transform 0.6s; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        #fc-page .card.flipped { transform: rotateY(180deg); }
+        #fc-page .card-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 25px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 40px; text-align: center;
+        }
+        #fc-page .card-front { background: white; color: #333; }
+        #fc-page .card-back {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; transform: rotateY(180deg);
+        }
+        #fc-page .word-label { font-size: 1.2em; color: #667eea; margin-bottom: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        #fc-page .main-word { font-size: 3em; font-weight: bold; margin: 20px 0; color: #333; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        #fc-page .task {
+            font-size: 1.5em; color: #666; margin-top: 20px; padding: 15px 25px;
+            background: #f0f3ff; border-radius: 15px; border-left: 5px solid #667eea;
+        }
+        #fc-page .answer-word { font-size: 3.5em; font-weight: bold; margin: 20px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        #fc-page .answer-type { font-size: 1.3em; opacity: 0.9; margin-top: 15px; }
+        #fc-page .hint-text { position: absolute; bottom: 30px; font-size: 0.9em; color: #999; font-style: italic; }
+        #fc-page .controls { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 600px; width: 100%; margin: 0 auto; }
+        #fc-page .btn {
+            padding: 15px 30px; font-size: 1.1em; border: none; border-radius: 25px; cursor: pointer;
+            font-weight: 600; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        #fc-page .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        #fc-page .btn:active { transform: translateY(-1px); }
+        #fc-page .btn-show { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        #fc-page .btn-know { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        #fc-page .btn-dont-know { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        #fc-page .btn-next { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); color: white; }
+        #fc-page .progress-container { width: 100%; max-width: 600px; margin: 20px auto 0; }
+        #fc-page .progress-bar { width: 100%; height: 10px; background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; }
+        #fc-page .progress-fill { height: 100%; background: white; transition: width 0.5s; border-radius: 10px; }
+        #fc-page .progress-text { text-align: center; color: white; margin-top: 10px; font-weight: 600; }
+        #fc-page .completion-message {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            background: white; padding: 40px 60px; border-radius: 25px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 1000; transition: transform 0.5s;
+        }
+        #fc-page .completion-message.show { transform: translate(-50%, -50%) scale(1); }
+        #fc-page .completion-message h2 { color: #667eea; font-size: 2.5em; margin-bottom: 20px; }
+        #fc-page .completion-message p { font-size: 1.3em; color: #666; margin: 10px 0; }
+        #fc-page .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 999;
+        }
+        #fc-page .overlay.show { display: block; }
+        @media (max-width: 768px) {
+            #ex-page .score-board { position: relative; top: 0; right: 0; margin-bottom: 20px; }
+            #ex-page .compound-match { grid-template-columns: 1fr; }
+            #fc-page .main-word { font-size: 2em; }
+            #fc-page .answer-word { font-size: 2.5em; }
+            #fc-page .task { font-size: 1.2em; }
+            #fc-page .card-container { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- НАВИГАЦИЯ -->
+    <nav class="top-nav">
+        <button class="nav-btn active" onclick="switchPage('ex')">📝 Упражнения с заполнением</button>
+        <button class="nav-btn" onclick="switchPage('fc')"> Карточки-флешки</button>
+    </nav>
+
+    <!-- СТРАНИЦА 1: УПРАЖНЕНИЯ -->
+    <div id="ex-page" class="page active">
+        <div class="score-board">✅ Правильно: <span id="ex-correct-count">0</span> / <span id="ex-total-count">0</span></div>
+        <div class="container">
+            <header>
+                <h1>📚 Word Formation Trainer</h1>
+                <p class="subtitle">8 класс • Отработка словообразования</p>
+            </header>
+
+            <div class="topic-tabs">
+                <button class="tab-btn active" onclick="showSection('adjectives')">🎨 Прилагательные</button>
+                <button class="tab-btn" onclick="showSection('negative')">❌ Отрицания</button>
+                <button class="tab-btn" onclick="showSection('verbs')"> Глаголы</button>
+                <button class="tab-btn" onclick="showSection('opposites')">🔄 Антонимы</button>
+                <button class="tab-btn" onclick="showSection('nouns')">📝 Существительные</button>
+                <button class="tab-btn" onclick="showSection('compound')">🔗 Составные слова</button>
+            </div>
+
+            <!-- Прилагательные -->
+            <div id="adjectives" class="exercise-section active">
+                <div class="section-title">🎨 Forming Adjectives</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>noun + -ful</strong> → useful, beautiful</li>
+                        <li><strong>noun + -al</strong> → magical, musical</li>
+                        <li><strong>noun + -ic</strong> → optimistic, heroic</li>
+                        <li><strong>noun + -ish</strong> → selfish, childish</li>
+                        <li><strong>noun + -less</strong> → helpless, homeless</li>
+                        <li><strong>noun + -ous</strong> → famous, dangerous</li>
+                        <li><strong>verb + -able</strong> → reliable, comfortable</li>
+                        <li><strong>verb + -ive</strong> → active, creative</li>
+                        <li><strong>noun + -y</strong> → rainy, sunny</li>
+                    </ul>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">1. I was disappointed to learn the children were <span class="word-hint">BEHAVE</span> at the party yesterday.</div>
+                    <input type="text" class="answer-input" id="adj1" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('adj1', 'misbehaving', 'misbehaved')">Проверить</button>
+                    <div class="feedback" id="feedback-adj1"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">2. I can't find the receipt. I think I've <span class="word-hint">PLACE</span> it.</div>
+                    <input type="text" class="answer-input" id="adj2" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('adj2', 'misplaced', 'misplaced')">Проверить</button>
+                    <div class="feedback" id="feedback-adj2"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">3. Don't trust him! He's a <span class="word-hint">HONEST</span> man.</div>
+                    <input type="text" class="answer-input" id="adj3" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('adj3', 'dishonest', 'dishonest')">Проверить</button>
+                    <div class="feedback" id="feedback-adj3"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">4. I've had a <span class="word-hint">UNDERSTAND</span> with my teacher.</div>
+                    <input type="text" class="answer-input" id="adj4" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('adj4', 'misunderstanding', 'misunderstanding')">Проверить</button>
+                    <div class="feedback" id="feedback-adj4"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">5. Some young people are rude; they often <span class="word-hint">RESPECT</span> their elders.</div>
+                    <input type="text" class="answer-input" id="adj5" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('adj5', 'disrespect', 'disrespect')">Проверить</button>
+                    <div class="feedback" id="feedback-adj5"></div>
+                </div>
+            </div>
+
+            <!-- Отрицания -->
+            <div id="negative" class="exercise-section">
+                <div class="section-title">❌ Forming Negative Adjectives/Nouns/Verbs</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>dis-</strong> + adjective/noun/verb → disappointed, disorder, dislike</li>
+                        <li><strong>mis-</strong> + verb/noun → misbehave, misguide, misunderstanding</li>
+                        <li><strong>un-</strong> + adjective → unhappy, uncomfortable</li>
+                    </ul>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">1. What are the <span class="word-hint">ADVANTAGE</span> of buying from flea markets?</div>
+                    <input type="text" class="answer-input" id="neg1" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('neg1', 'disadvantages', 'disadvantage')">Проверить</button>
+                    <div class="feedback" id="feedback-neg1"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">2. The instructions were <span class="word-hint">CLEAR</span> so I made a mistake.</div>
+                    <input type="text" class="answer-input" id="neg2" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('neg2', 'unclear', 'unclear')">Проверить</button>
+                    <div class="feedback" id="feedback-neg2"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">3. She <span class="word-hint">UNDERSTAND</span> the question and gave the wrong answer.</div>
+                    <input type="text" class="answer-input" id="neg3" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('neg3', 'misunderstood', 'misunderstood')">Проверить</button>
+                    <div class="feedback" id="feedback-neg3"></div>
+                </div>
+            </div>
+
+            <!-- Глаголы -->
+            <div id="verbs" class="exercise-section">
+                <div class="section-title">⚡ Forming Verbs</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>-ise/-ize</strong> → memory → memorise, apology → apologise</li>
+                        <li><strong>-en</strong> → wide → widen, strong → strengthen</li>
+                        <li><strong>-ify</strong> → simple → simplify, pure → purify</li>
+                    </ul>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">1. I haven't written his phone number down but I've <span class="word-hint">MEMORY</span> it.</div>
+                    <input type="text" class="answer-input" id="verb1" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb1', 'memorised', 'memorized')">Проверить</button>
+                    <div class="feedback" id="feedback-verb1"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">2. Tony was very sorry, so he <span class="word-hint">APOLOGY</span> for breaking the vase.</div>
+                    <input type="text" class="answer-input" id="verb2" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb2', 'apologised', 'apologized')">Проверить</button>
+                    <div class="feedback" id="feedback-verb2"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">3. We have to <span class="word-hint">SUMMARY</span> a 3-page text for our English class.</div>
+                    <input type="text" class="answer-input" id="verb3" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb3', 'summarise', 'summarize')">Проверить</button>
+                    <div class="feedback" id="feedback-verb3"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">4. Mark has bought an old house which he is going to <span class="word-hint">MODERN</span>.</div>
+                    <input type="text" class="answer-input" id="verb4" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb4', 'modernise', 'modernize')">Проверить</button>
+                    <div class="feedback" id="feedback-verb4"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">5. The film <span class="word-hint">CHARACTER</span> the captain as evil.</div>
+                    <input type="text" class="answer-input" id="verb5" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb5', 'characterises', 'characterizes')">Проверить</button>
+                    <div class="feedback" id="feedback-verb5"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">6. Kim is very kind and she never <span class="word-hint">CRITIC</span> anyone.</div>
+                    <input type="text" class="answer-input" id="verb6" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('verb6', 'criticises', 'criticizes')">Проверить</button>
+                    <div class="feedback" id="feedback-verb6"></div>
+                </div>
+            </div>
+
+            <!-- Антонимы -->
+            <div id="opposites" class="exercise-section">
+                <div class="section-title">🔄 Forming Opposite Adjectives</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>il-</strong> перед словами с <strong>l</strong> → legal → illegal</li>
+                        <li><strong>im-</strong> перед <strong>m, p, b</strong> → mature → immature, probable → improbable</li>
+                        <li><strong>ir-</strong> перед <strong>r</strong> → relevant → irrelevant</li>
+                        <li><strong>in-</strong> перед другими буквами → dependent → independent</li>
+                    </ul>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">1. The food will be ready in a minute. Don't be so <span class="word-hint">PATIENT</span>.</div>
+                    <input type="text" class="answer-input" id="opp1" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp1', 'impatient', 'impatient')">Проверить</button>
+                    <div class="feedback" id="feedback-opp1"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">2. You can't rely on John. He's very <span class="word-hint">RESPONSIBLE</span>.</div>
+                    <input type="text" class="answer-input" id="opp2" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp2', 'irresponsible', 'irresponsible')">Проверить</button>
+                    <div class="feedback" id="feedback-opp2"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">3. We cannot meet the deadline. It will be <span class="word-hint">POSSIBLE</span>.</div>
+                    <input type="text" class="answer-input" id="opp3" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp3', 'impossible', 'impossible')">Проверить</button>
+                    <div class="feedback" id="feedback-opp3"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">4. His decision was <span class="word-hint">LOGICAL</span>; I don't know why he did it.</div>
+                    <input type="text" class="answer-input" id="opp4" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp4', 'illogical', 'illogical')">Проверить</button>
+                    <div class="feedback" id="feedback-opp4"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">5. In the UK, it's <span class="word-hint">LEGAL</span> to drive a car if you are under 17.</div>
+                    <input type="text" class="answer-input" id="opp5" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp5', 'illegal', 'illegal')">Проверить</button>
+                    <div class="feedback" id="feedback-opp5"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">6. Most of the time, he wears <span class="word-hint">FORMAL</span> clothes to work, not a suit and tie.</div>
+                    <input type="text" class="answer-input" id="opp6" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('opp6', 'informal', 'informal')">Проверить</button>
+                    <div class="feedback" id="feedback-opp6"></div>
+                </div>
+            </div>
+
+            <!-- Существительные -->
+            <div id="nouns" class="exercise-section">
+                <div class="section-title">📝 Forming Nouns</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>-(t)ion</strong> → act → action, inform → information</li>
+                        <li><strong>-ance/-ence</strong> → appear → appearance, depend → dependence</li>
+                        <li><strong>-ity</strong> → active → activity, able → ability</li>
+                        <li><strong>-ness</strong> → happy → happiness, kind → kindness</li>
+                        <li><strong>-ment</strong> → develop → development, achieve → achievement</li>
+                        <li><strong>-ship</strong> → citizen → citizenship, friend → friendship</li>
+                    </ul>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">1. I would like to thank you for your <span class="word-hint">KIND</span>.</div>
+                    <input type="text" class="answer-input" id="noun1" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('noun1', 'kindness', 'kindness')">Проверить</button>
+                    <div class="feedback" id="feedback-noun1"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">2. For some people, travelling alone is plain <span class="word-hint">MAD</span>.</div>
+                    <input type="text" class="answer-input" id="noun2" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('noun2', 'madness', 'madness')">Проверить</button>
+                    <div class="feedback" id="feedback-noun2"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">3. We went on some hair-raising rides at the <span class="word-hint">AMUSE</span> park.</div>
+                    <input type="text" class="answer-input" id="noun3" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('noun3', 'amusement', 'amusement')">Проверить</button>
+                    <div class="feedback" id="feedback-noun3"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">4. You should be proud of your <span class="word-hint">ACHIEVE</span>.</div>
+                    <input type="text" class="answer-input" id="noun4" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('noun4', 'achievement', 'achievement')">Проверить</button>
+                    <div class="feedback" id="feedback-noun4"></div>
+                </div>
+                <div class="exercise-item">
+                    <div class="exercise-text">5. He was proud to take part in the hockey <span class="word-hint">CHAMPION</span>.</div>
+                    <input type="text" class="answer-input" id="noun5" placeholder="Введите правильную форму слова">
+                    <button class="check-btn" onclick="checkAnswer('noun5', 'championship', 'championship')">Проверить</button>
+                    <div class="feedback" id="feedback-noun5"></div>
+                </div>
+            </div>
+
+            <!-- Составные прилагательные -->
+            <div id="compound" class="exercise-section">
+                <div class="section-title">🔗 Compound Adjectives</div>
+                <div class="theory-box">
+                    <h3>📖 Правила:</h3>
+                    <ul>
+                        <li><strong>adjective + present/past participle</strong> → good-looking, kind-hearted</li>
+                        <li><strong>adverb + past participle</strong> → well-known, well-educated</li>
+                        <li>Используются дефисы для соединения слов</li>
+                    </ul>
+                </div>
+                <div class="compound-match">
+                    <div class="match-item">
+                        <strong>1. old</strong>
+                        <select class="match-select" id="comp1">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                    <div class="match-item">
+                        <strong>2. kind</strong>
+                        <select class="match-select" id="comp2">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                    <div class="match-item">
+                        <strong>3. open</strong>
+                        <select class="match-select" id="comp3">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                    <div class="match-item">
+                        <strong>4. long</strong>
+                        <select class="match-select" id="comp4">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                    <div class="match-item">
+                        <strong>5. good</strong>
+                        <select class="match-select" id="comp5">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                    <div class="match-item">
+                        <strong>6. well</strong>
+                        <select class="match-select" id="comp6">
+                            <option value="">-- Выберите --</option>
+                            <option value="looking">looking</option>
+                            <option value="lasting">lasting</option>
+                            <option value="known">known</option>
+                            <option value="hearted">hearted</option>
+                            <option value="minded">minded</option>
+                            <option value="fashioned">fashioned</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="check-btn" onclick="checkCompound()">Проверить все</button>
+                <div class="feedback" id="feedback-compound"></div>
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9ff; border-radius: 10px;">
+                    <strong>Пример:</strong> I can discuss anything with my parents. They are very <strong>open-minded</strong>.
+                </div>
+            </div>
+
+            <div class="progress-bar" style="width: 100%; height: 8px; background: #e0e0ff; border-radius: 4px; margin: 20px 0; overflow: hidden;">
+                <div class="progress-fill" id="ex-progress" style="height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.5s; border-radius: 4px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА 2: КАРТОЧКИ -->
+    <div id="fc-page" class="page">
+        <div class="stats">
+            <div class="stat-box">✅ Знаю: <span id="fc-known-count">0</span></div>
+            <div class="stat-box">📚 Всего: <span id="fc-total-count">0</span></div>
+            <div class="stat-box"> Точность: <span id="fc-accuracy">0</span>%</div>
+        </div>
+
+        <div class="category-selector">
+            <select id="fc-category-select" onchange="changeCategory()">
+                <option value="all">Все категории</option>
+                <option value="adjectives">Прилагательные</option>
+                <option value="negative">Отрицания (dis-, mis-)</option>
+                <option value="verbs">Глаголы (-ise/-ize)</option>
+                <option value="opposites">Антонимы (il-, im-, ir-, in-)</option>
+                <option value="nouns">Существительные</option>
+                <option value="compound">Составные прилагательные</option>
+            </select>
+        </div>
+
+        <div class="card-container" onclick="flipCard()">
+            <div class="card" id="flashcard">
+                <div class="card-face card-front">
+                    <div class="word-label">Исходное слово</div>
+                    <div class="main-word" id="front-word">BEHAVE</div>
+                    <div class="task" id="front-task">→ Образуй прилагательное</div>
+                    <div class="hint-text">👆 Нажми, чтобы перевернуть</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="word-label">Правильный ответ</div>
+                    <div class="answer-word" id="back-word">misbehaving</div>
+                    <div class="answer-type" id="back-type">прилагательное (с mis-)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-show" onclick="flipCard()">🔁 Перевернуть</button>
+            <button class="btn btn-know" onclick="markKnown()">✅ Знаю</button>
+            <button class="btn btn-dont-know" onclick="markDontKnow()">❌ Не знаю</button>
+            <button class="btn btn-next" onclick="nextCard()">Следующее →</button>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="fc-progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+                Карточка <span id="fc-current-num">1</span> из <span id="fc-total-num">0</span>
+            </div>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="completion-message" id="completion-message">
+            <h2>🎉 Поздравляю!</h2>
+            <p>Ты прошла все карточки!</p>
+            <p>Правильных ответов: <strong id="final-known">0</strong> из <strong id="final-total">0</strong></p>
+            <p id="final-percent">Точность: 0%</p>
+            <button class="btn btn-next" onclick="restartTraining()" style="margin-top: 20px;">🔄 Начать заново</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== НАВИГАЦИЯ МЕЖДУ СТРАНИЦАМИ =====
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== ЛОГИКА УПРАЖНЕНИЙ =====
+        let exCorrectAnswers = 0;
+        let exTotalAttempts = 0;
+        let exAnsweredItems = new Set();
+
+        function showSection(sectionId) {
+            document.querySelectorAll('#ex-page .exercise-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('#ex-page .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function checkAnswer(inputId, correctAnswer, altAnswer) {
+            const input = document.getElementById(inputId);
+            const feedback = document.getElementById('feedback-' + inputId);
+            const userAnswer = input.value.trim().toLowerCase();
+            
+            if (!userAnswer) {
+                feedback.textContent = '⚠️ Введите ответ!';
+                feedback.className = 'feedback show incorrect';
+                return;
+            }
+            if (exAnsweredItems.has(inputId)) {
+                feedback.textContent = '✅ Уже отвечено!';
+                feedback.className = 'feedback show';
+                return;
+            }
+            exTotalAttempts++;
+            if (userAnswer === correctAnswer.toLowerCase() || userAnswer === altAnswer.toLowerCase()) {
+                input.classList.add('correct');
+                feedback.innerHTML = '✅ Правильно! Молодец!';
+                feedback.className = 'feedback show correct';
+                exCorrectAnswers++;
+                exAnsweredItems.add(inputId);
+            } else {
+                input.classList.add('incorrect');
+                feedback.innerHTML = `❌ Неправильно. Правильный ответ: <strong>${correctAnswer}</strong>`;
+                feedback.className = 'feedback show incorrect';
+            }
+            updateExScore();
+            updateExProgress();
+        }
+
+        function checkCompound() {
+            const answers = { 'comp1': 'fashioned', 'comp2': 'hearted', 'comp3': 'minded', 'comp4': 'lasting', 'comp5': 'looking', 'comp6': 'known' };
+            let correct = 0;
+            let total = Object.keys(answers).length;
+            let allAnswered = true;
+            for (let [id, correctAnswer] of Object.entries(answers)) {
+                const select = document.getElementById(id);
+                if (!select.value) allAnswered = false;
+                else if (select.value === correctAnswer) { correct++; select.style.borderColor = '#2ecc71'; select.style.background = '#d4edda'; }
+                else { select.style.borderColor = '#e74c3c'; select.style.background = '#f8d7da'; }
+            }
+            const feedback = document.getElementById('feedback-compound');
+            if (!allAnswered) {
+                feedback.textContent = '⚠️ Ответьте на все вопросы!';
+                feedback.className = 'feedback show incorrect';
+            } else {
+                feedback.innerHTML = `✅ Правильно: ${correct} из ${total}`;
+                feedback.className = 'feedback show correct';
+                if (!exAnsweredItems.has('compound')) {
+                    exCorrectAnswers += correct;
+                    exTotalAttempts += total;
+                    exAnsweredItems.add('compound');
+                    updateExScore();
+                    updateExProgress();
+                }
+            }
+        }
+
+        function updateExScore() {
+            document.getElementById('ex-correct-count').textContent = exCorrectAnswers;
+            document.getElementById('ex-total-count').textContent = exTotalAttempts;
+        }
+
+        function updateExProgress() {
+            const totalQuestions = 30;
+            const progress = (exAnsweredItems.size / totalQuestions) * 100;
+            document.getElementById('ex-progress').style.width = progress + '%';
+        }
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('answer-input') && e.target.closest('#ex-page')) {
+                const section = e.target.closest('.exercise-section');
+                const checkBtn = section.querySelector('.check-btn');
+                if (checkBtn) checkBtn.click();
+            }
+        });
+
+        // ===== ЛОГИКА КАРТОЧЕК =====
+        const cardsData = {
+            adjectives: [
+                { word: 'BEHAVE', answer: 'misbehaving', task: 'прилагательное', type: 'прилагательное (с mis-)' },
+                { word: 'USE', answer: 'useful', task: 'прилагательное', type: 'прилагательное (+ -ful)' },
+                { word: 'MAGIC', answer: 'magical', task: 'прилагательное', type: 'прилагательное (+ -al)' },
+                { word: 'OPTIMIST', answer: 'optimistic', task: 'прилагательное', type: 'прилагательное (+ -ic)' },
+                { word: 'SELF', answer: 'selfish', task: 'прилагательное', type: 'прилагательное (+ -ish)' },
+                { word: 'HELP', answer: 'helpless', task: 'прилагательное', type: 'прилагательное (+ -less)' },
+                { word: 'FURY', answer: 'furious', task: 'прилагательное', type: 'прилагательное (+ -ous)' },
+                { word: 'RELY', answer: 'reliable', task: 'прилагательное', type: 'прилагательное (+ -able)' },
+                { word: 'ACT', answer: 'active', task: 'прилагательное', type: 'прилагательное (+ -ive)' },
+                { word: 'RAIN', answer: 'rainy', task: 'прилагательное', type: 'прилагательное (+ -y)' }
+            ],
+            negative: [
+                { word: 'PLACE', answer: 'misplaced', task: 'глагол (прош. время)', type: 'глагол с mis-' },
+                { word: 'HONEST', answer: 'dishonest', task: 'прилагательное', type: 'прилагательное с dis-' },
+                { word: 'UNDERSTAND', answer: 'misunderstanding', task: 'существительное', type: 'существительное с mis-' },
+                { word: 'RESPECT', answer: 'disrespect', task: 'глагол', type: 'глагол с dis-' },
+                { word: 'ADVANTAGE', answer: 'disadvantages', task: 'существительное (мн.ч.)', type: 'существительное с dis-' },
+                { word: 'QUOTE', answer: 'misquote', task: 'глагол', type: 'глагол с mis-' },
+                { word: 'GUIDE', answer: 'misguide', task: 'глагол', type: 'глагол с mis-' },
+                { word: 'LIKE', answer: 'dislike', task: 'глагол', type: 'глагол с dis-' }
+            ],
+            verbs: [
+                { word: 'MEMORY', answer: 'memorised/memorized', task: 'глагол', type: 'глагол (+ -ise/-ize)' },
+                { word: 'APOLOGY', answer: 'apologised/apologized', task: 'глагол', type: 'глагол (+ -ise/-ize)' },
+                { word: 'SUMMARY', answer: 'summarise/summarize', task: 'глагол', type: 'глагол (+ -ise/-ize)' },
+                { word: 'MODERN', answer: 'modernise/modernize', task: 'глагол', type: 'глагол (+ -ise/-ize)' },
+                { word: 'CHARACTER', answer: 'characterises/characterizes', task: 'глагол (3л.ед.ч.)', type: 'глагол (+ -ise/-ize)' },
+                { word: 'CRITIC', answer: 'criticises/criticizes', task: 'глагол (3л.ед.ч.)', type: 'глагол (+ -ise/-ize)' },
+                { word: 'SYMPATHY', answer: 'sympathise/sympathize', task: 'глагол', type: 'глагол (+ -ise/-ize)' }
+            ],
+            opposites: [
+                { word: 'PATIENT', answer: 'impatient', task: 'антоним (прил.)', type: 'с im- (перед p)' },
+                { word: 'RESPONSIBLE', answer: 'irresponsible', task: 'антоним (прил.)', type: 'с ir- (перед r)' },
+                { word: 'POSSIBLE', answer: 'impossible', task: 'антоним (прил.)', type: 'с im- (перед p)' },
+                { word: 'LOGICAL', answer: 'illogical', task: 'антоним (прил.)', type: 'с il- (перед l)' },
+                { word: 'LEGAL', answer: 'illegal', task: 'антоним (прил.)', type: 'с il- (перед l)' },
+                { word: 'FORMAL', answer: 'informal', task: 'антоним (прил.)', type: 'с in-' },
+                { word: 'DEPENDENT', answer: 'independent', task: 'антоним (прил.)', type: 'с in-' },
+                { word: 'RELEVANT', answer: 'irrelevant', task: 'антоним (прил.)', type: 'с ir- (перед r)' },
+                { word: 'MATURE', answer: 'immature', task: 'антоним (прил.)', type: 'с im- (перед m)' },
+                { word: 'BALANCED', answer: 'imbalanced', task: 'антоним (прил.)', type: 'с im- (перед b)' }
+            ],
+            nouns: [
+                { word: 'KIND', answer: 'kindness', task: 'существительное', type: 'существительное (+ -ness)' },
+                { word: 'MAD', answer: 'madness', task: 'существительное', type: 'существительное (+ -ness)' },
+                { word: 'AMUSE', answer: 'amusement', task: 'существительное', type: 'существительное (+ -ment)' },
+                { word: 'ACHIEVE', answer: 'achievement', task: 'существительное', type: 'существительное (+ -ment)' },
+                { word: 'CHAMPION', answer: 'championship', task: 'существительное', type: 'существительное (+ -ship)' },
+                { word: 'ACT', answer: 'action', task: 'существительное', type: 'существительное (+ -ion)' },
+                { word: 'APPEAR', answer: 'appearance', task: 'существительное', type: 'существительное (+ -ance)' },
+                { word: 'DEPEND', answer: 'dependence', task: 'существительное', type: 'существительное (+ -ence)' },
+                { word: 'ACTIVE', answer: 'activity', task: 'существительное', type: 'существительное (+ -ity)' },
+                { word: 'CITIZEN', answer: 'citizenship', task: 'существительное', type: 'существительное (+ -ship)' },
+                { word: 'DEVELOP', answer: 'development', task: 'существительное', type: 'существительное (+ -ment)' },
+                { word: 'HAPPY', answer: 'happiness', task: 'существительное', type: 'существительное (+ -ness)' }
+            ],
+            compound: [
+                { word: 'OLD + FASHION', answer: 'old-fashioned', task: 'составное прил.', type: 'adjective + past participle' },
+                { word: 'KIND + HEART', answer: 'kind-hearted', task: 'составное прил.', type: 'adjective + noun + -ed' },
+                { word: 'OPEN + MIND', answer: 'open-minded', task: 'составное прил.', type: 'adjective + noun + -ed' },
+                { word: 'LONG + LAST', answer: 'long-lasting', task: 'составное прил.', type: 'adjective + present participle' },
+                { word: 'GOOD + LOOK', answer: 'good-looking', task: 'составное прил.', type: 'adjective + present participle' },
+                { word: 'WELL + KNOW', answer: 'well-known', task: 'составное прил.', type: 'adverb + past participle' }
+            ]
+        };
+
+        let fcCurrentCards = [];
+        let fcCurrentIndex = 0;
+        let fcKnownCount = 0;
+        let fcAnsweredCount = 0;
+        let fcIsFlipped = false;
+
+        function initCards(category) {
+            if (category === 'all') { fcCurrentCards = Object.values(cardsData).flat(); }
+            else { fcCurrentCards = [...cardsData[category]]; }
+            fcCurrentCards.sort(() => Math.random() - 0.5);
+            fcCurrentIndex = 0;
+            fcIsFlipped = false;
+            updateCard();
+            updateFcStats();
+        }
+
+        function updateCard() {
+            const card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            fcIsFlipped = false;
+            setTimeout(() => {
+                if (fcCurrentCards[fcCurrentIndex]) {
+                    document.getElementById('front-word').textContent = fcCurrentCards[fcCurrentIndex].word;
+                    document.getElementById('front-task').textContent = '→ Образуй ' + fcCurrentCards[fcCurrentIndex].task;
+                    document.getElementById('back-word').textContent = fcCurrentCards[fcCurrentIndex].answer;
+                    document.getElementById('back-type').textContent = fcCurrentCards[fcCurrentIndex].type;
+                    document.getElementById('fc-current-num').textContent = fcCurrentIndex + 1;
+                    document.getElementById('fc-total-num').textContent = fcCurrentCards.length;
+                    const progress = ((fcCurrentIndex) / fcCurrentCards.length) * 100;
+                    document.getElementById('fc-progress-fill').style.width = progress + '%';
+                }
+            }, 200);
+        }
+
+        function flipCard() {
+            const card = document.getElementById('flashcard');
+            card.classList.toggle('flipped');
+            fcIsFlipped = !fcIsFlipped;
+        }
+
+        function markKnown() {
+            if (!fcIsFlipped) flipCard();
+            setTimeout(() => { fcKnownCount++; fcAnsweredCount++; updateFcStats(); nextCard(); }, 300);
+        }
+
+        function markDontKnow() {
+            if (!fcIsFlipped) flipCard();
+            setTimeout(() => { fcAnsweredCount++; updateFcStats(); nextCard(); }, 300);
+        }
+
+        function nextCard() {
+            fcCurrentIndex++;
+            if (fcCurrentIndex >= fcCurrentCards.length) showCompletion();
+            else updateCard();
+        }
+
+        function updateFcStats() {
+            document.getElementById('fc-known-count').textContent = fcKnownCount;
+            document.getElementById('fc-total-count').textContent = fcCurrentCards.length;
+            const accuracy = fcAnsweredCount > 0 ? Math.round((fcKnownCount / fcAnsweredCount) * 100) : 0;
+            document.getElementById('fc-accuracy').textContent = accuracy;
+        }
+
+        function showCompletion() {
+            document.getElementById('final-known').textContent = fcKnownCount;
+            document.getElementById('final-total').textContent = fcCurrentCards.length;
+            const percent = fcCurrentCards.length > 0 ? Math.round((fcKnownCount / fcCurrentCards.length) * 100) : 0;
+            document.getElementById('final-percent').textContent = 'Точность: ' + percent + '%';
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('completion-message').classList.add('show');
+        }
+
+        function restartTraining() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('completion-message').classList.remove('show');
+            fcKnownCount = 0;
+            fcAnsweredCount = 0;
+            initCards(document.getElementById('fc-category-select').value);
+        }
+
+        function changeCategory() {
+            const category = document.getElementById('fc-category-select').value;
+            fcKnownCount = 0;
+            fcAnsweredCount = 0;
+            initCards(category);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && document.getElementById('fc-page').classList.contains('active')) {
+                e.preventDefault(); flipCard();
+            } else if (e.code === 'ArrowRight' && document.getElementById('fc-page').classList.contains('active')) {
+                nextCard();
+            } else if (e.code === 'KeyK' && document.getElementById('fc-page').classList.contains('active')) {
+                markKnown();
+            } else if (e.code === 'KeyN' && document.getElementById('fc-page').classList.contains('active')) {
+                markDontKnow();
+            }
+        });
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            initCards('all');
+        });
+    </script>
+	<!-- Добавьте этот код перед закрывающим тегом </body> -->
+<footer style="text-align: center; padding: 30px 20px; color: white;">
+    <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 12px 25px; border-radius: 30px; backdrop-filter: blur(5px); transition: all 0.3s;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white" style="opacity: 0.9;">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 13.38c-.24.54-.78.72-1.32.48-1.38-.62-2.64-1.56-3.76-2.68-1.12-1.12-2.06-2.38-2.68-3.76-.24-.54-.06-1.08.48-1.32s1.08-.06 1.32.48c.5 1.12 1.28 2.16 2.2 3.08.92.92 1.96 1.7 3.08 2.2.54.24.72.78.48 1.32z"/>
+        </svg>
+        <a href="https://vk.com/proenglishkulagina" 
+           target="_blank" 
+           style="color: white; text-decoration: none; font-weight: 600; font-size: 1.05em; transition: opacity 0.3s;">
+            proenglishkulagina
+        </a>
+    </div>
+    <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+        © 2026 Word Formation Trainer • Spotlight 8
+    </p>
+</footer>
+</body>
+</html>
